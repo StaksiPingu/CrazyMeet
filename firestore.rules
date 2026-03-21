@@ -1,0 +1,71 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: is the user authenticated?
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    // Helper: is the user an admin?
+    function isAdmin() {
+      return isAuth() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Helper: is the requesting user the owner?
+    function isOwner(uid) {
+      return isAuth() && request.auth.uid == uid;
+    }
+
+    // Users: read by any authenticated user, write only own document
+    match /users/{uid} {
+      allow read: if isAuth();
+      allow create: if isOwner(uid);
+      allow update: if isOwner(uid) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Messages: read/create by any auth user, delete own or admin
+    match /messages/{msgId} {
+      allow read: if isAuth();
+      allow create: if isAuth() && request.resource.data.senderId == request.auth.uid;
+      allow delete: if isAuth() && (resource.data.senderId == request.auth.uid || isAdmin());
+      allow update: if false;
+    }
+
+    // Events: read by auth users, create/update/delete by admin
+    match /events/{eventId} {
+      allow read: if isAuth();
+      allow create, delete: if isAdmin();
+      // Allow any auth user to update attendance field only
+      allow update: if isAuth() && (
+        isAdmin() ||
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['attendance'])
+      );
+    }
+
+    // Songs: read by auth, create by auth, delete own or admin
+    match /songs/{songId} {
+      allow read: if isAuth();
+      allow create: if isAuth() && request.resource.data.addedBy == request.auth.uid;
+      allow update: if isAdmin();
+      allow delete: if isAuth() && (resource.data.addedBy == request.auth.uid || isAdmin());
+    }
+
+    // Votes: read by auth, create/close/delete by admin, update votes field by auth
+    match /votes/{voteId} {
+      allow read: if isAuth();
+      allow create, delete: if isAdmin();
+      allow update: if isAuth() && (
+        isAdmin() ||
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['votes'])
+      );
+    }
+
+    // Config (links etc.): read by auth, write by admin
+    match /config/{docId} {
+      allow read: if isAuth();
+      allow write: if isAdmin();
+    }
+  }
+}
