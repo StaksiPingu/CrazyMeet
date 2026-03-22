@@ -52,13 +52,4 @@ export default defineConfig({
   resolve: {
     alias: { '@': path.resolve(__dirname, './src') },
   },
-  server: {
-    proxy: {
-      '/webdav-proxy': {
-        target: 'https://webex.crazymess.de',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/webdav-proxy/, ''),
-      },
-    },
-  },
 })

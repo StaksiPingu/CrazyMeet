@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Capacitor, CapacitorHttp } from '@capacitor/core'
 import { FolderOpen, ArrowLeft, Settings, X, ExternalLink, RefreshCw, Download, AlertCircle } from 'lucide-react'
 
 interface WebDavConfig {
@@ -48,23 +49,28 @@ function fileIcon(name: string, isDir: boolean) {
   return '📄'
 }
 
+const XML_BODY = `<?xml version="1.0"?><d:propfind xmlns:d="DAV:"><d:prop><d:displayname/><d:resourcetype/><d:getcontentlength/><d:getlastmodified/><d:getcontenttype/></d:prop></d:propfind>`
+
 async function propfind(config: WebDavConfig, path: string): Promise<DavEntry[]> {
   const base64 = btoa(`${config.username}:${config.password}`)
   const url = config.url.replace(/\/$/, '') + path
+  const headers = {
+    'Authorization': `Basic ${base64}`,
+    'Depth': '1',
+    'Content-Type': 'application/xml; charset=utf-8',
+  }
 
-  const res = await fetch(url, {
-    method: 'PROPFIND',
-    headers: {
-      'Authorization': `Basic ${base64}`,
-      'Depth': '1',
-      'Content-Type': 'application/xml; charset=utf-8',
-    },
-    body: `<?xml version="1.0"?><d:propfind xmlns:d="DAV:"><d:prop><d:displayname/><d:resourcetype/><d:getcontentlength/><d:getlastmodified/><d:getcontenttype/></d:prop></d:propfind>`,
-  })
-
-  if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`)
-
-  const text = await res.text()
+  let text: string
+  if (Capacitor.isNativePlatform()) {
+    // Native HTTP bypasses CORS
+    const res = await CapacitorHttp.request({ method: 'PROPFIND', url, headers, data: XML_BODY })
+    if (res.status < 200 || res.status >= 300) throw new Error(`HTTP ${res.status}`)
+    text = typeof res.data === 'string' ? res.data : JSON.stringify(res.data)
+  } else {
+    const res = await fetch(url, { method: 'PROPFIND', headers, body: XML_BODY })
+    if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`)
+    text = await res.text()
+  }
   const parser = new DOMParser()
   const xml = parser.parseFromString(text, 'application/xml')
   const responses = Array.from(xml.querySelectorAll('response'))
