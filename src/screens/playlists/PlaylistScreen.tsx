@@ -192,7 +192,7 @@ function PlaylistCard({ playlist, songs, currentUserId, isAdmin }: {
         <div className="flex-1 min-w-0">
           <div className="font-semibold text-sm text-white truncate">{playlist.name}</div>
           {playlist.description && <div className="text-[#888888] text-xs truncate">{playlist.description}</div>}
-          <div className="text-[10px] text-[#555] mt-0.5">{playlistSongs.length} Songs · von {playlist.createdByName}</div>
+          <div className="text-[10px] text-[#555] mt-0.5">{playlist.songIds.length} Songs · von {playlist.createdByName}</div>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
           {canDelete && (
