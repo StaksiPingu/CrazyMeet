@@ -10,6 +10,7 @@ import EventsScreen from '@/screens/events/EventsScreen'
 import VotingScreen from '@/screens/voting/VotingScreen'
 import LinksScreen from '@/screens/links/LinksScreen'
 import ProfileScreen from '@/screens/profile/ProfileScreen'
+import PlaylistScreen from '@/screens/playlists/PlaylistScreen'
 
 function SplashScreen() {
   return (
@@ -52,6 +53,7 @@ function AppRoutes() {
         <Route path="/events" element={<EventsScreen />} />
         <Route path="/voting" element={<VotingScreen />} />
         <Route path="/links" element={<LinksScreen />} />
+        <Route path="/playlists" element={<PlaylistScreen />} />
         <Route path="/profile" element={<ProfileScreen />} />
       </Route>
       <Route path="*" element={<Navigate to="/home" replace />} />

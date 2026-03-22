@@ -90,6 +90,16 @@ export interface Vote {
   multiSelect?: boolean
 }
 
+export interface Playlist {
+  id: string
+  name: string
+  description?: string
+  songIds: string[]
+  createdBy: string
+  createdByName: string
+  createdAt: Timestamp
+}
+
 export interface LinksConfig {
   spotifyArtistUrl?: string
   spotifyPlaylistId?: string

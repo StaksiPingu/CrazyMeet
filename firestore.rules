@@ -62,6 +62,14 @@ service cloud.firestore {
       );
     }
 
+    // Playlists: read/create by auth, update/delete own or admin
+    match /playlists/{playlistId} {
+      allow read: if isAuth();
+      allow create: if isAuth() && request.resource.data.createdBy == request.auth.uid;
+      allow update: if isAuth() && (resource.data.createdBy == request.auth.uid || isAdmin());
+      allow delete: if isAuth() && (resource.data.createdBy == request.auth.uid || isAdmin());
+    }
+
     // Config (links etc.): read by auth, write by admin
     match /config/{docId} {
       allow read: if isAuth();

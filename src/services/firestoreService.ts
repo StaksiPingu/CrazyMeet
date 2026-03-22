@@ -4,7 +4,7 @@ import {
   Timestamp,
 } from 'firebase/firestore'
 import { db } from './firebase'
-import type { BandEvent, Song, Vote, LinksConfig, Message } from '@/types'
+import type { BandEvent, Song, Vote, LinksConfig, Message, Playlist } from '@/types'
 
 // ─── MESSAGES ────────────────────────────────────────────────────────────────
 
@@ -127,6 +127,36 @@ export function subscribeLinksConfig(callback: (cfg: LinksConfig) => void) {
   return onSnapshot(doc(db, 'config', 'links'), snap => {
     callback(snap.exists() ? (snap.data() as LinksConfig) : {})
   })
+}
+
+// ─── PLAYLISTS ────────────────────────────────────────────────────────────────
+
+export function subscribePlaylists(callback: (playlists: Playlist[]) => void) {
+  const q = query(collection(db, 'playlists'), orderBy('createdAt', 'desc'))
+  return onSnapshot(q, snap => {
+    callback(snap.docs.map(d => ({ id: d.id, ...d.data() })) as Playlist[])
+  })
+}
+
+export async function createPlaylist(data: Omit<Playlist, 'id' | 'createdAt'>) {
+  return addDoc(collection(db, 'playlists'), { ...data, createdAt: serverTimestamp() })
+}
+
+export async function updatePlaylist(id: string, data: Partial<Playlist>) {
+  return updateDoc(doc(db, 'playlists', id), data)
+}
+
+export async function deletePlaylist(id: string) {
+  return deleteDoc(doc(db, 'playlists', id))
+}
+
+export async function addSongToPlaylist(playlistId: string, songId: string, currentSongIds: string[]) {
+  if (currentSongIds.includes(songId)) return
+  return updateDoc(doc(db, 'playlists', playlistId), { songIds: [...currentSongIds, songId] })
+}
+
+export async function removeSongFromPlaylist(playlistId: string, songId: string, currentSongIds: string[]) {
+  return updateDoc(doc(db, 'playlists', playlistId), { songIds: currentSongIds.filter(id => id !== songId) })
 }
 
 // ─── USERS ───────────────────────────────────────────────────────────────────

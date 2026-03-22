@@ -1,11 +1,12 @@
 import { NavLink } from 'react-router-dom'
-import { Home, MessageCircle, Music2, Calendar, Link2, User, Settings } from 'lucide-react'
+import { Home, MessageCircle, Music2, Calendar, Link2, ListMusic, User, Settings } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 
 const NAV_ITEMS = [
   { to: '/home', icon: Home, label: 'Home', exact: true },
   { to: '/chat', icon: MessageCircle, label: 'Chat' },
   { to: '/songs', icon: Music2, label: 'Songs' },
+  { to: '/playlists', icon: ListMusic, label: 'Playlists' },
   { to: '/events', icon: Calendar, label: 'Events' },
   { to: '/links', icon: Link2, label: 'Links & Socials' },
 ]
