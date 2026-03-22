@@ -120,9 +120,6 @@ export default function LoginScreen() {
         </div>
       </form>
 
-      <p className="mt-10 text-[#555] text-xs text-center">
-        Nur für Bandmitglieder von Crazy Mess
-      </p>
     </div>
   )
 }

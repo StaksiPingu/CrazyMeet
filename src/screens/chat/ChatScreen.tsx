@@ -78,7 +78,6 @@ export default function ChatScreen() {
         </div>
         <div>
           <h1 className="font-bold text-sm text-white">Crazy Mess · Band-Chat</h1>
-          <p className="text-[10px] text-[#888888]">Nur für Bandmitglieder</p>
         </div>
       </div>
 
