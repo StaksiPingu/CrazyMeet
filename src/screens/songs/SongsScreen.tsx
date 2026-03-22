@@ -87,12 +87,15 @@ function AddSongModal({ onClose, userId, userName }: { onClose: () => void; user
       const spotifyTrackId = urlType === 'spotify' ? (extractSpotifyTrackId(url) || undefined) : undefined
       const youtubeId = urlType === 'youtube' ? (extractYoutubeId(url) || undefined) : undefined
       const coverImage = youtubeId ? `https://img.youtube.com/vi/${youtubeId}/mqdefault.jpg` : undefined
-      await addSong({
+      const songData: any = {
         title: title.trim(), artist: artist.trim(), url,
-        urlType, spotifyTrackId, youtubeId, coverImage,
-        tags: tags.length ? tags : ['idee'],
+        urlType, tags: tags.length ? tags : ['idee'],
         note: note.trim(), addedBy: userId, addedByName: userName,
-      })
+      }
+      if (spotifyTrackId) songData.spotifyTrackId = spotifyTrackId
+      if (youtubeId) songData.youtubeId = youtubeId
+      if (coverImage) songData.coverImage = coverImage
+      await addSong(songData)
       onClose()
     } catch (e: any) { setError(e?.message || 'Fehler beim Hinzufügen.') } finally { setLoading(false) }
   }
