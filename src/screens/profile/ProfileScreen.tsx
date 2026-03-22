@@ -7,7 +7,7 @@ import { updateProfile } from 'firebase/auth'
 import { auth } from '@/services/firebase'
 import { useNavigate } from 'react-router-dom'
 
-const INSTRUMENTS = ['Gesang', 'Gitarre', 'Bass', 'Schlagzeug', 'Keyboard', 'Keys/Synth', 'Geige', 'Trompete', 'Sonstige']
+const INSTRUMENTS = ['Gesang/Vocals', 'E-Gitarre', 'Rhythmusgitarre', 'Bass', 'Schlagzeug', 'Sonstige']
 
 export default function ProfileScreen() {
   const { user, isAdmin } = useAuth()

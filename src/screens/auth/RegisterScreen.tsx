@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { UserPlus } from 'lucide-react'
 import { register } from '@/services/authService'
 
-const INSTRUMENTS = ['Gesang', 'Gitarre', 'Bass', 'Schlagzeug', 'Keyboard', 'Keys/Synth', 'Geige', 'Trompete', 'Sonstige']
+const INSTRUMENTS = ['Gesang/Vocals', 'E-Gitarre', 'Rhythmusgitarre', 'Bass', 'Schlagzeug', 'Sonstige']
 
 export default function RegisterScreen() {
   const navigate = useNavigate()
