@@ -94,7 +94,7 @@ function AddSongModal({ onClose, userId, userName }: { onClose: () => void; user
         note: note.trim(), addedBy: userId, addedByName: userName,
       })
       onClose()
-    } catch { setError('Fehler beim Hinzufügen.') } finally { setLoading(false) }
+    } catch (e: any) { setError(e?.message || 'Fehler beim Hinzufügen.') } finally { setLoading(false) }
   }
 
   return (
