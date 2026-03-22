@@ -70,7 +70,7 @@ export default function ChatScreen() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-[#0A0A0A]">
+    <div className="flex flex-col h-full min-h-screen bg-[#0A0A0A]">
       {/* Header */}
       <div className="glass border-b border-[#2A2A2A] px-4 py-3 flex items-center gap-3 flex-shrink-0 safe-top">
         <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-[#8B00FF] purple-glow-sm">
