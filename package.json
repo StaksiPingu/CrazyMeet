@@ -11,7 +11,8 @@
     "build:android": "npm run build && npx cap sync android",
     "build:ios": "npm run build && npx cap sync ios",
     "open:android": "npx cap open android",
-    "open:ios": "npx cap open ios"
+    "open:ios": "npx cap open ios",
+    "deploy": "npm run build && firebase deploy --only hosting"
   },
   "dependencies": {
     "@capacitor/android": "^8.2.0",
