@@ -55,7 +55,7 @@ export async function getTrackById(trackId: string) {
 /** Extract Spotify track ID from various URL formats */
 export function extractSpotifyTrackId(url: string): string | null {
   const patterns = [
-    /spotify\.com\/track\/([a-zA-Z0-9]+)/,
+    /spotify\.com\/(?:intl-[a-z]+\/)?track\/([a-zA-Z0-9]+)/,
     /spotify:track:([a-zA-Z0-9]+)/,
   ]
   for (const p of patterns) {
