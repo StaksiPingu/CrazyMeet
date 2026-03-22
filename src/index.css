@@ -101,6 +101,16 @@ input:focus, textarea:focus, select:focus { border-color: #8B00FF; }
   padding-bottom: max(12px, env(safe-area-inset-bottom));
 }
 
+/* Safe padding bottom for more sheet */
+.pb-safe {
+  padding-bottom: max(24px, env(safe-area-inset-bottom));
+}
+
+/* Screen top safe area (status bar) */
+.screen-top {
+  padding-top: max(24px, env(safe-area-inset-top, 24px));
+}
+
 /* Slide up animation for modals */
 @keyframes slideUp {
   from { transform: translateY(100%); opacity: 0; }

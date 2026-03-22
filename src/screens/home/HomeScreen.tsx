@@ -36,7 +36,7 @@ export default function HomeScreen() {
   const openVotes = votes.filter(v => !v.closed).slice(0, 2)
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#0A0A0A] px-4 pt-8 pb-4">
+    <div className="flex flex-col min-h-screen bg-[#0A0A0A] px-4 pb-4 screen-top">
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center justify-between">

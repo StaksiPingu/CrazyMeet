@@ -228,7 +228,7 @@ export default function VotingScreen() {
 
   return (
     <div className="flex flex-col min-h-screen bg-[#0A0A0A]">
-      <div className="px-4 pt-8 pb-4">
+      <div className="px-4 pb-4 screen-top">
         <div className="flex items-center justify-between mb-4">
           <div>
             <h1 className="text-2xl font-black gradient-text">Abstimmungen</h1>

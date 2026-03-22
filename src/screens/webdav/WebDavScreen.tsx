@@ -248,7 +248,7 @@ export default function WebDavScreen() {
   return (
     <div className="flex flex-col min-h-screen bg-[#0A0A0A]">
       {/* Header */}
-      <div className="px-4 pt-8 pb-3">
+      <div className="px-4 pb-3 screen-top">
         <div className="flex items-center justify-between mb-1">
           <h1 className="text-2xl font-black gradient-text">Dateien</h1>
           <div className="flex items-center gap-2">

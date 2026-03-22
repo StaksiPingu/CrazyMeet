@@ -35,7 +35,7 @@ export default function ProfileScreen() {
   const initials = user?.displayName?.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) || '?'
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#0A0A0A] px-4 pt-8 pb-6">
+    <div className="flex flex-col min-h-screen bg-[#0A0A0A] px-4 pb-6 screen-top">
       {/* Avatar */}
       <div className="flex flex-col items-center mb-8">
         <div className="w-24 h-24 rounded-full overflow-hidden border-3 border-[#8B00FF] purple-glow mb-4">
