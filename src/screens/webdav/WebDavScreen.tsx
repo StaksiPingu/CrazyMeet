@@ -260,7 +260,7 @@ export default function WebDavScreen() {
             </button>
           </div>
         </div>
-        <p className="text-[#888888] text-xs truncate">{new URL(config.url).hostname}</p>
+        <p className="text-[#888888] text-xs truncate">{(() => { try { return new URL(config.url).hostname } catch { return config.url } })()}</p>
       </div>
 
       {/* Breadcrumb */}
