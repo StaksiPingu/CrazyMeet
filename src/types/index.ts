@@ -95,6 +95,7 @@ export interface Playlist {
   name: string
   description?: string
   songIds: string[]
+  spotifyPlaylistId?: string
   createdBy: string
   createdByName: string
   createdAt: Timestamp

@@ -29,18 +29,28 @@ function YouTubeEmbed({ videoId }: { videoId: string }) {
   )
 }
 
+function extractSpotifyPlaylistId(input: string): string | null {
+  const m = input.match(/playlist\/([a-zA-Z0-9]+)/)
+  if (m) return m[1]
+  if (/^[a-zA-Z0-9]{10,}$/.test(input.trim())) return input.trim()
+  return null
+}
+
 function CreatePlaylistModal({ onClose, userId, userName }: { onClose: () => void; userId: string; userName: string }) {
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
+  const [spotifyLink, setSpotifyLink] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!name.trim()) { setError('Bitte einen Namen eingeben.'); return }
+    const spotifyPlaylistId = spotifyLink.trim() ? extractSpotifyPlaylistId(spotifyLink.trim()) ?? undefined : undefined
+    if (spotifyLink.trim() && !spotifyPlaylistId) { setError('Ungültiger Spotify-Playlist-Link.'); return }
     setLoading(true)
     try {
-      await createPlaylist({ name: name.trim(), description: description.trim(), songIds: [], createdBy: userId, createdByName: userName })
+      await createPlaylist({ name: name.trim(), description: description.trim(), songIds: [], spotifyPlaylistId, createdBy: userId, createdByName: userName })
       onClose()
     } catch { setError('Fehler beim Erstellen.') } finally { setLoading(false) }
   }
@@ -61,6 +71,16 @@ function CreatePlaylistModal({ onClose, userId, userName }: { onClose: () => voi
               onChange={e => setName(e.target.value)}
               placeholder="z.B. Setlist Gig Berlin"
               autoFocus
+              className="w-full px-3 py-2.5 rounded-xl bg-[#1E1E1E] border border-[#2A2A2A] text-white text-sm placeholder-[#555] focus:border-[#8B00FF] transition-colors"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-[#888888] uppercase tracking-wide block mb-1">Spotify Playlist Link (optional)</label>
+            <input
+              type="text"
+              value={spotifyLink}
+              onChange={e => setSpotifyLink(e.target.value)}
+              placeholder="https://open.spotify.com/playlist/..."
               className="w-full px-3 py-2.5 rounded-xl bg-[#1E1E1E] border border-[#2A2A2A] text-white text-sm placeholder-[#555] focus:border-[#8B00FF] transition-colors"
             />
           </div>
@@ -189,9 +209,20 @@ function PlaylistCard({ playlist, songs, currentUserId, isAdmin }: {
       {/* Songs */}
       {expanded && (
         <div className="border-t border-[#2A2A2A]">
-          {playlistSongs.length === 0 ? (
+          {playlist.spotifyPlaylistId && (
+            <div className="p-3">
+              <iframe
+                src={`https://open.spotify.com/embed/playlist/${playlist.spotifyPlaylistId}?utm_source=generator&theme=0`}
+                height="380"
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                loading="lazy"
+                className="w-full rounded-xl border-0"
+              />
+            </div>
+          )}
+          {!playlist.spotifyPlaylistId && playlistSongs.length === 0 ? (
             <p className="text-[#555] text-xs text-center py-6">Noch keine Songs in dieser Playlist.</p>
-          ) : (
+          ) : !playlist.spotifyPlaylistId && (
             <div className="divide-y divide-[#1E1E1E]">
               {playlistSongs.map((song, i) => (
                 <div key={song.id} className="px-4 py-3">
@@ -236,14 +267,16 @@ function PlaylistCard({ playlist, songs, currentUserId, isAdmin }: {
               ))}
             </div>
           )}
-          <div className="px-4 py-3 border-t border-[#1E1E1E]">
-            <button
-              onClick={() => setShowAddSong(true)}
-              className="w-full py-2 rounded-xl border border-dashed border-[#8B00FF]/40 text-[#8B00FF] text-sm hover:bg-[#8B00FF]/10 transition-all flex items-center justify-center gap-2"
-            >
-              <Plus size={15} /> Song hinzufügen
-            </button>
-          </div>
+          {!playlist.spotifyPlaylistId && (
+            <div className="px-4 py-3 border-t border-[#1E1E1E]">
+              <button
+                onClick={() => setShowAddSong(true)}
+                className="w-full py-2 rounded-xl border border-dashed border-[#8B00FF]/40 text-[#8B00FF] text-sm hover:bg-[#8B00FF]/10 transition-all flex items-center justify-center gap-2"
+              >
+                <Plus size={15} /> Song hinzufügen
+              </button>
+            </div>
+          )}
         </div>
       )}
 
