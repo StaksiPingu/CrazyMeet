@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { Home, MessageCircle, Music2, Calendar, Link2, ListMusic, User, Settings } from 'lucide-react'
+import { Home, MessageCircle, Music2, Calendar, Link2, ListMusic, FolderOpen, User, Settings } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 
 const NAV_ITEMS = [
@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { to: '/songs', icon: Music2, label: 'Songs' },
   { to: '/playlists', icon: ListMusic, label: 'Playlists' },
   { to: '/events', icon: Calendar, label: 'Events' },
+  { to: '/files', icon: FolderOpen, label: 'Dateien' },
   { to: '/links', icon: Link2, label: 'Links & Socials' },
 ]
 

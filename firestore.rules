@@ -33,13 +33,14 @@ service cloud.firestore {
       allow update: if false;
     }
 
-    // Events: read by auth users, create/update/delete by admin
+    // Events: read/create by auth users, delete own or admin
     match /events/{eventId} {
       allow read: if isAuth();
-      allow create, delete: if isAdmin();
-      // Allow any auth user to update attendance field only
+      allow create: if isAuth() && request.resource.data.createdBy == request.auth.uid;
+      allow delete: if isAuth() && (resource.data.createdBy == request.auth.uid || isAdmin());
       allow update: if isAuth() && (
         isAdmin() ||
+        resource.data.createdBy == request.auth.uid ||
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['attendance'])
       );
     }
@@ -52,12 +53,14 @@ service cloud.firestore {
       allow delete: if isAuth() && (resource.data.addedBy == request.auth.uid || isAdmin());
     }
 
-    // Votes: read by auth, create/close/delete by admin, update votes field by auth
+    // Votes: read/create by auth, delete own or admin, update votes/closed by auth
     match /votes/{voteId} {
       allow read: if isAuth();
-      allow create, delete: if isAdmin();
+      allow create: if isAuth() && request.resource.data.createdBy == request.auth.uid;
+      allow delete: if isAuth() && (resource.data.createdBy == request.auth.uid || isAdmin());
       allow update: if isAuth() && (
         isAdmin() ||
+        resource.data.createdBy == request.auth.uid ||
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['votes'])
       );
     }

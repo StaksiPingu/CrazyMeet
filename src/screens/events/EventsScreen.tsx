@@ -61,7 +61,7 @@ function EventCard({ event, userId, isAdmin, onDelete }: { event: BandEvent; use
             </div>
           </div>
           {/* Delete */}
-          {isAdmin && (
+          {(isAdmin || event.createdBy === userId) && (
             <button onClick={() => onDelete(event.id)} className="text-[#555] hover:text-red-400 transition-colors flex-shrink-0">
               <Trash2 size={15} />
             </button>
@@ -119,14 +119,12 @@ export default function EventsScreen() {
             <h1 className="text-2xl font-black gradient-text">Events</h1>
             <p className="text-[#888888] text-xs mt-0.5">Gigs · Proben · Termine</p>
           </div>
-          {isAdmin && (
-            <button
-              onClick={() => setShowCreate(true)}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#8B00FF] hover:bg-[#AA44FF] text-white text-sm font-semibold transition-all purple-glow-sm"
-            >
-              <Plus size={16} /> Event
-            </button>
-          )}
+          <button
+            onClick={() => setShowCreate(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#8B00FF] hover:bg-[#AA44FF] text-white text-sm font-semibold transition-all purple-glow-sm"
+          >
+            <Plus size={16} /> Event
+          </button>
         </div>
         {/* Tabs */}
         <div className="flex gap-2 bg-[#141414] border border-[#2A2A2A] rounded-xl p-1">
@@ -148,7 +146,7 @@ export default function EventsScreen() {
           <div className="flex flex-col items-center justify-center py-16 text-[#555]">
             <Calendar size={48} className="mb-3 opacity-30" />
             <p className="text-sm">{tab === 'upcoming' ? 'Keine kommenden Events.' : 'Noch keine vergangenen Events.'}</p>
-            {isAdmin && tab === 'upcoming' && (
+            {tab === 'upcoming' && (
               <button onClick={() => setShowCreate(true)} className="mt-3 text-[#8B00FF] text-sm hover:text-[#AA44FF]">+ Event erstellen</button>
             )}
           </div>

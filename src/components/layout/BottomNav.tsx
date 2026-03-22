@@ -1,12 +1,12 @@
 import { NavLink } from 'react-router-dom'
-import { Home, MessageCircle, Music2, Calendar, ListMusic } from 'lucide-react'
+import { Home, MessageCircle, Music2, ListMusic, FolderOpen } from 'lucide-react'
 
 const NAV_ITEMS = [
   { to: '/home', icon: Home, label: 'Home', exact: true },
   { to: '/chat', icon: MessageCircle, label: 'Chat' },
   { to: '/songs', icon: Music2, label: 'Songs' },
   { to: '/playlists', icon: ListMusic, label: 'Playlists' },
-  { to: '/events', icon: Calendar, label: 'Events' },
+  { to: '/files', icon: FolderOpen, label: 'Dateien' },
 ]
 
 export default function BottomNav() {

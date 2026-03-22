@@ -148,12 +148,12 @@ function VoteCard({ vote, userId, isAdmin }: { vote: VoteType; userId: string; i
             {vote.closed && <span className="text-[10px] text-red-400 flex items-center gap-0.5"><Lock size={9} /> Geschlossen</span>}
           </div>
         </div>
-        {isAdmin && !vote.closed && (
+        {(isAdmin || vote.createdBy === userId) && !vote.closed && (
           <button onClick={() => closeVote(vote.id)} className="text-[10px] text-[#555] hover:text-yellow-400 flex items-center gap-1 transition-colors whitespace-nowrap">
             <Lock size={11} /> Schließen
           </button>
         )}
-        {isAdmin && (
+        {(isAdmin || vote.createdBy === userId) && (
           <button onClick={() => { if (confirm('Abstimmung löschen?')) deleteVote(vote.id) }} className="text-[#555] hover:text-red-400 transition-colors">
             <X size={15} />
           </button>
@@ -234,12 +234,10 @@ export default function VotingScreen() {
             <h1 className="text-2xl font-black gradient-text">Abstimmungen</h1>
             <p className="text-[#888888] text-xs mt-0.5">Songs · Termine · Entscheidungen</p>
           </div>
-          {isAdmin && (
-            <button onClick={() => setShowCreate(true)}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#8B00FF] hover:bg-[#AA44FF] text-white text-sm font-semibold transition-all purple-glow-sm">
-              <Plus size={16} /> Neu
-            </button>
-          )}
+          <button onClick={() => setShowCreate(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#8B00FF] hover:bg-[#AA44FF] text-white text-sm font-semibold transition-all purple-glow-sm">
+            <Plus size={16} /> Neu
+          </button>
         </div>
         <div className="flex gap-2 bg-[#141414] border border-[#2A2A2A] rounded-xl p-1">
           {([['open', `Offen (${open.length})`], ['closed', `Geschlossen (${closed.length})`]] as const).map(([t, label]) => (
