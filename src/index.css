@@ -127,3 +127,22 @@ input:focus, textarea:focus, select:focus { border-color: #8B00FF; }
 .purple-gradient-bg {
   background: linear-gradient(135deg, #0A0A0A 0%, #1a0030 50%, #0A0A0A 100%);
 }
+
+/* Responsive layout: sidebar only on desktop, bottom nav only on mobile */
+.desktop-sidebar {
+  display: none;
+}
+@media (min-width: 768px) {
+  .desktop-sidebar {
+    display: flex;
+  }
+}
+
+.mobile-nav {
+  display: flex;
+}
+@media (min-width: 768px) {
+  .mobile-nav {
+    display: none;
+  }
+}
