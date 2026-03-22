@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { Home, MessageCircle, Music2, Calendar, MoreHorizontal, ListMusic, FolderOpen, Link2, Vote, User, X } from 'lucide-react'
+import { Home, MessageCircle, Music2, Calendar, MoreHorizontal, ListMusic, Link2, Vote, User, X } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 
 const MAIN_NAV = [
@@ -12,7 +12,7 @@ const MAIN_NAV = [
 
 const MORE_ITEMS = [
   { to: '/playlists', icon: ListMusic, label: 'Playlists' },
-  { to: '/files', icon: FolderOpen, label: 'Dateien' },
+
   { to: '/voting', icon: Vote, label: 'Abstimmung' },
   { to: '/links', icon: Link2, label: 'Links & Socials' },
   { to: '/profile', icon: User, label: 'Profil' },
