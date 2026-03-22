@@ -7,6 +7,12 @@ interface WebDavConfig {
   password: string
 }
 
+const DEFAULT_CONFIG: WebDavConfig = {
+  url: import.meta.env.VITE_WEBDAV_URL || '',
+  username: import.meta.env.VITE_WEBDAV_USER || '',
+  password: import.meta.env.VITE_WEBDAV_PASS || '',
+}
+
 interface DavEntry {
   name: string
   href: string
@@ -158,10 +164,13 @@ function ConfigModal({ onSave, onClose, current }: { onSave: (cfg: WebDavConfig)
 const STORAGE_KEY = 'crazymeet_webdav_config'
 
 export default function WebDavScreen() {
-  const [config, setConfig] = useState<WebDavConfig | null>(() => {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') } catch { return null }
+  const [config, setConfig] = useState<WebDavConfig>(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null')
+      return saved || DEFAULT_CONFIG
+    } catch { return DEFAULT_CONFIG }
   })
-  const [showConfig, setShowConfig] = useState(!config)
+  const [showConfig, setShowConfig] = useState(false)
   const [path, setPath] = useState('/')
   const [pathStack, setPathStack] = useState<string[]>([])
   const [entries, setEntries] = useState<DavEntry[]>([])
@@ -197,7 +206,7 @@ export default function WebDavScreen() {
 
   function handleDisconnect() {
     localStorage.removeItem(STORAGE_KEY)
-    setConfig(null)
+    setConfig(DEFAULT_CONFIG)
     setEntries([])
     setPath('/')
     setPathStack([])
@@ -208,55 +217,26 @@ export default function WebDavScreen() {
     const newPath = entry.href.startsWith('http') ? new URL(entry.href).pathname : entry.href
     setPathStack(s => [...s, path])
     setPath(newPath)
-    if (config) load(config, newPath)
+    load(config, newPath)
   }
 
   function goBack() {
     const prev = pathStack[pathStack.length - 1] || '/'
     setPathStack(s => s.slice(0, -1))
     setPath(prev)
-    if (config) load(config, prev)
+    load(config, prev)
   }
 
   function openFile(entry: DavEntry) {
     const fileUrl = entry.href.startsWith('http')
       ? entry.href
-      : (config?.url.replace(/\/$/, '') + entry.href)
+      : (config.url.replace(/\/$/, '') + entry.href)
     window.open(fileUrl, '_blank', 'noopener,noreferrer')
   }
 
   function currentFolderName() {
     const parts = path.split('/').filter(Boolean)
     return parts.length === 0 ? 'Root' : decodeURIComponent(parts[parts.length - 1])
-  }
-
-  if (!config || showConfig) {
-    return (
-      <div className="flex flex-col min-h-screen bg-[#0A0A0A]">
-        <div className="px-4 pt-8 pb-4">
-          <h1 className="text-2xl font-black gradient-text">Dateien</h1>
-          <p className="text-[#888888] text-xs mt-0.5">WebDAV · Nextcloud · Eigener Server</p>
-        </div>
-        <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
-          <FolderOpen size={64} className="text-[#8B00FF]/30 mb-4" />
-          <h2 className="text-white font-bold text-lg mb-2">Noch nicht verbunden</h2>
-          <p className="text-[#888888] text-sm mb-6">Verbinde deinen WebDAV-Server um Dateien zu durchsuchen</p>
-          <button
-            onClick={() => setShowConfig(true)}
-            className="px-6 py-3 rounded-xl bg-[#8B00FF] hover:bg-[#AA44FF] text-white font-bold transition-all purple-glow-sm"
-          >
-            Server verbinden
-          </button>
-        </div>
-        {showConfig && (
-          <ConfigModal
-            onSave={handleSaveConfig}
-            onClose={() => { if (config) setShowConfig(false) }}
-            current={config || undefined}
-          />
-        )}
-      </div>
-    )
   }
 
   return (
@@ -267,7 +247,7 @@ export default function WebDavScreen() {
           <h1 className="text-2xl font-black gradient-text">Dateien</h1>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => config && load(config, path)}
+              onClick={() => load(config, path)}
               className="p-2 rounded-xl text-[#888888] hover:text-white hover:bg-[#1E1E1E] transition-all"
             >
               <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
