@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Plus, Vote, X, Check, Lock } from 'lucide-react'
-import { subscribeVotes, createVote, castVote, closeVote, deleteVote } from '@/services/firestoreService'
+import { Plus, Vote, X, Check, Lock, Share2 } from 'lucide-react'
+import { subscribeVotes, createVote, castVote, closeVote, deleteVote, sendMessage } from '@/services/firestoreService'
 import { useAuth } from '@/context/AuthContext'
 import type { Vote as VoteType, VoteType as VType } from '@/types'
 
@@ -107,11 +107,28 @@ function CreateVoteModal({ onClose, userId, userName }: { onClose: () => void; u
   )
 }
 
-function VoteCard({ vote, userId, isAdmin }: { vote: VoteType; userId: string; isAdmin: boolean }) {
+function VoteCard({ vote, userId, isAdmin, userName }: { vote: VoteType; userId: string; isAdmin: boolean; userName: string }) {
   const myVotes = vote.votes?.[userId] || []
   const totalVoters = Object.keys(vote.votes || {}).length
   const [selected, setSelected] = useState<string[]>(myVotes)
   const [saving, setSaving] = useState(false)
+  const [shared, setShared] = useState(false)
+
+  function getOptionCount(optId: string) {
+    return Object.values(vote.votes || {}).filter((ids: unknown) => (ids as string[]).includes(optId)).length
+  }
+
+  async function handleShareToChat() {
+    const sorted = [...vote.options].sort((a, b) => getOptionCount(b.id) - getOptionCount(a.id))
+    const lines = sorted.map(opt => {
+      const count = getOptionCount(opt.id)
+      return `  ${count}x ${opt.label}`
+    }).join('\n')
+    const text = `🗳️ Abstimmung: "${vote.question}"\n${lines}\n(${totalVoters} Stimme${totalVoters !== 1 ? 'n' : ''})`
+    await sendMessage(userId, userName, '', text)
+    setShared(true)
+    setTimeout(() => setShared(false), 3000)
+  }
 
   function toggleOption(optId: string) {
     if (vote.closed) return
@@ -126,10 +143,6 @@ function VoteCard({ vote, userId, isAdmin }: { vote: VoteType; userId: string; i
     if (!selected.length) return
     setSaving(true)
     try { await castVote(vote.id, userId, selected) } finally { setSaving(false) }
-  }
-
-  function getOptionCount(optId: string) {
-    return Object.values(vote.votes || {}).filter((ids: unknown) => (ids as string[]).includes(optId)).length
   }
 
   const hasVoted = myVotes.length > 0
@@ -148,16 +161,26 @@ function VoteCard({ vote, userId, isAdmin }: { vote: VoteType; userId: string; i
             {vote.closed && <span className="text-[10px] text-red-400 flex items-center gap-0.5"><Lock size={9} /> Geschlossen</span>}
           </div>
         </div>
-        {(isAdmin || vote.createdBy === userId) && !vote.closed && (
-          <button onClick={() => closeVote(vote.id)} className="text-[10px] text-[#555] hover:text-yellow-400 flex items-center gap-1 transition-colors whitespace-nowrap">
-            <Lock size={11} /> Schließen
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <button
+            onClick={handleShareToChat}
+            title="In Chat teilen"
+            className={`text-xs flex items-center gap-1 transition-colors ${shared ? 'text-green-400' : 'text-[#555] hover:text-[#8B00FF]'}`}
+          >
+            <Share2 size={13} />
+            <span className="hidden sm:inline">{shared ? 'Geteilt!' : 'Chat'}</span>
           </button>
-        )}
-        {(isAdmin || vote.createdBy === userId) && (
-          <button onClick={() => { if (confirm('Abstimmung löschen?')) deleteVote(vote.id) }} className="text-[#555] hover:text-red-400 transition-colors">
-            <X size={15} />
-          </button>
-        )}
+          {(isAdmin || vote.createdBy === userId) && !vote.closed && (
+            <button onClick={() => closeVote(vote.id)} className="text-[10px] text-[#555] hover:text-yellow-400 flex items-center gap-1 transition-colors whitespace-nowrap">
+              <Lock size={11} /> Schließen
+            </button>
+          )}
+          {(isAdmin || vote.createdBy === userId) && (
+            <button onClick={() => { if (confirm('Abstimmung löschen?')) deleteVote(vote.id) }} className="text-[#555] hover:text-red-400 transition-colors">
+              <X size={15} />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Options */}
@@ -256,7 +279,7 @@ export default function VotingScreen() {
           </div>
         ) : (
           displayed.map(vote => (
-            <VoteCard key={vote.id} vote={vote} userId={user?.uid || ''} isAdmin={isAdmin} />
+            <VoteCard key={vote.id} vote={vote} userId={user?.uid || ''} isAdmin={isAdmin} userName={user?.displayName || ''} />
           ))
         )}
       </div>

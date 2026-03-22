@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Plus, Calendar, MapPin, Trash2 } from 'lucide-react'
+import { Plus, Calendar, MapPin, Trash2, ChevronDown, ChevronUp } from 'lucide-react'
 import { subscribeEvents, deleteEvent, setAttendance } from '@/services/firestoreService'
 import { useAuth } from '@/context/AuthContext'
 import type { BandEvent, AttendanceStatus } from '@/types'
@@ -7,16 +7,64 @@ import { format, isFuture, isToday, isPast } from 'date-fns'
 import { de } from 'date-fns/locale'
 import CreateEventModal from './CreateEventModal'
 
+function AttendanceList({ attendance }: { attendance: BandEvent['attendance'] }) {
+  const entries = Object.values(attendance || {})
+  const yes = entries.filter(a => a.status === 'yes')
+  const no = entries.filter(a => a.status === 'no')
+  const maybe = entries.filter(a => a.status === 'maybe')
+
+  return (
+    <div className="mt-3 pt-3 border-t border-[#2A2A2A] space-y-2">
+      {yes.length > 0 && (
+        <div>
+          <span className="text-[10px] text-green-400 font-semibold uppercase tracking-wide">✓ Dabei ({yes.length})</span>
+          <div className="flex flex-wrap gap-1.5 mt-1">
+            {yes.map(a => (
+              <span key={a.userId} className="text-xs bg-green-900/20 text-green-400 border border-green-800/40 px-2 py-0.5 rounded-full">{a.userName}</span>
+            ))}
+          </div>
+        </div>
+      )}
+      {maybe.length > 0 && (
+        <div>
+          <span className="text-[10px] text-yellow-400 font-semibold uppercase tracking-wide">? Vielleicht ({maybe.length})</span>
+          <div className="flex flex-wrap gap-1.5 mt-1">
+            {maybe.map(a => (
+              <span key={a.userId} className="text-xs bg-yellow-900/20 text-yellow-400 border border-yellow-800/40 px-2 py-0.5 rounded-full">{a.userName}</span>
+            ))}
+          </div>
+        </div>
+      )}
+      {no.length > 0 && (
+        <div>
+          <span className="text-[10px] text-red-400 font-semibold uppercase tracking-wide">✗ Absage ({no.length})</span>
+          <div className="flex flex-wrap gap-1.5 mt-1">
+            {no.map(a => (
+              <span key={a.userId} className="text-xs bg-red-900/20 text-red-400 border border-red-800/40 px-2 py-0.5 rounded-full">{a.userName}</span>
+            ))}
+          </div>
+        </div>
+      )}
+      {entries.length === 0 && (
+        <p className="text-[#555] text-xs">Noch keine Rückmeldungen.</p>
+      )}
+    </div>
+  )
+}
+
 function EventCard({ event, userId, isAdmin, onDelete }: { event: BandEvent; userId: string; isAdmin: boolean; onDelete: (id: string) => void }) {
   const d = event.date?.toDate()
   const myAtt = event.attendance?.[userId]?.status
   const past = d ? isPast(d) && !isToday(d) : false
+  const [showAtt, setShowAtt] = useState(false)
   const attCounts = Object.values(event.attendance || {}).reduce((acc, a) => {
     acc[a.status] = (acc[a.status] || 0) + 1; return acc
   }, {} as Record<string, number>)
+  const totalAtt = Object.keys(event.attendance || {}).length
 
   async function handleAtt(status: AttendanceStatus) {
-    await setAttendance(event.id, userId, '', status)
+    const name = Object.values(event.attendance || {}).find(a => a.userId === userId)?.userName || ''
+    await setAttendance(event.id, userId, name, status)
   }
 
   return (
@@ -53,12 +101,18 @@ function EventCard({ event, userId, isAdmin, onDelete }: { event: BandEvent; use
             {event.description && (
               <p className="text-[#888888] text-xs mt-1.5 line-clamp-2">{event.description}</p>
             )}
-            {/* Attendance count */}
-            <div className="flex items-center gap-3 mt-2">
+            {/* Attendance count – klickbar */}
+            <button
+              onClick={() => setShowAtt(v => !v)}
+              className="flex items-center gap-3 mt-2 hover:opacity-80 transition-opacity"
+            >
               <span className="text-[10px] text-green-400">✓ {attCounts.yes || 0}</span>
               <span className="text-[10px] text-red-400">✗ {attCounts.no || 0}</span>
               <span className="text-[10px] text-yellow-400">? {attCounts.maybe || 0}</span>
-            </div>
+              {totalAtt > 0 && (
+                showAtt ? <ChevronUp size={11} className="text-[#555]" /> : <ChevronDown size={11} className="text-[#555]" />
+              )}
+            </button>
           </div>
           {/* Delete */}
           {(isAdmin || event.createdBy === userId) && (
@@ -67,6 +121,9 @@ function EventCard({ event, userId, isAdmin, onDelete }: { event: BandEvent; use
             </button>
           )}
         </div>
+
+        {/* Attendance name list */}
+        {showAtt && <AttendanceList attendance={event.attendance} />}
 
         {/* Attendance buttons */}
         {!past && (
