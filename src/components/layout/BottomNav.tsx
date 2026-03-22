@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { Home, MessageCircle, Music2, Calendar, MoreHorizontal, ListMusic, Link2, Vote, User, X } from 'lucide-react'
+import { Home, MessageCircle, Music2, Calendar, MoreHorizontal, ListMusic, FolderOpen, Link2, Vote, User, X } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 
 const MAIN_NAV = [
@@ -12,10 +12,13 @@ const MAIN_NAV = [
 
 const MORE_ITEMS = [
   { to: '/playlists', icon: ListMusic, label: 'Playlists' },
-
   { to: '/voting', icon: Vote, label: 'Abstimmung' },
   { to: '/links', icon: Link2, label: 'Links & Socials' },
   { to: '/profile', icon: User, label: 'Profil' },
+]
+
+const EXTERNAL_ITEMS = [
+  { href: 'https://files.crazymess.de', icon: FolderOpen, label: 'Dateien' },
 ]
 
 export default function BottomNav() {
@@ -67,6 +70,19 @@ export default function BottomNav() {
                 )}
                 <span className="text-sm font-medium text-white">{label}</span>
               </button>
+            ))}
+            {EXTERNAL_ITEMS.map(({ href, icon: Icon, label }) => (
+              <a
+                key={href}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setShowMore(false)}
+                className="flex items-center gap-3 p-3.5 rounded-2xl bg-[#1E1E1E] border border-[#2A2A2A] hover:border-[#8B00FF]/40 active:scale-95 transition-all text-left"
+              >
+                <Icon size={18} className="text-[#8B00FF] flex-shrink-0" />
+                <span className="text-sm font-medium text-white">{label}</span>
+              </a>
             ))}
           </div>
         </div>
