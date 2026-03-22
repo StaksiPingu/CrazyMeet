@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli'
 
 const config: CapacitorConfig = {
   appId: 'com.crazymess.meet',
-  appName: 'Crazy Mess Meet',
+  appName: 'CrazyMeet',
   webDir: 'dist',
   server: {
     androidScheme: 'https',

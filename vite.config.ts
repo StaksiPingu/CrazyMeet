@@ -12,8 +12,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'logo.png', 'icons/*.png'],
       manifest: {
-        name: 'Crazy Mess Meet',
-        short_name: 'CM Meet',
+        name: 'CrazyMeet',
+        short_name: 'CrazyMeet',
         description: 'Die offizielle Band-App von Crazy Mess – Chat, Proben, Gigs, Songs',
         theme_color: '#8B00FF',
         background_color: '#0A0A0A',

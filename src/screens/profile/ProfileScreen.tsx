@@ -126,7 +126,7 @@ export default function ProfileScreen() {
             <img src="/icons/icon-512.png" alt="CM" className="w-full h-full object-cover" />
           </div>
           <div>
-            <div className="text-white text-sm font-semibold">Crazy Mess Meet</div>
+            <div className="text-white text-sm font-semibold">CrazyMeet</div>
             <div className="text-[#888888] text-xs">Version 1.0.0 · Band-App</div>
           </div>
         </div>
